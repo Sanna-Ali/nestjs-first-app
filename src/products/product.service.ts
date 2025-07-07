@@ -2,30 +2,34 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { NotFoundException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
-
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from './product.entity';
 type ProductType = { id: number; title: string; price: number };
 @Injectable()
 export class ProductsService {
-  private products: ProductType[] = [
-    { id: 1, title: 'kuli', price: 7 },
-    { id: 2, title: 'Heft', price: 17 },
-    { id: 3, title: 'Radiergummmi', price: 6 },
-  ];
+  constructor(
+    @InjectRepository(Product)
+    private readonly productsRepository: Repository<Product>,
+  ) {}
   /**
    *
    * Create New Product
    */
-  public createProduct(
+  public async createProduct(
     //(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
-    { title, price }: CreateProductDto,
+    dto: CreateProductDto,
   ) {
-    const newProduct: ProductType = {
-      id: this.products.length + 1,
-      title,
-      price,
-    };
-    this.products.push(newProduct);
-    return newProduct;
+    const newProduct = this.productsRepository.create(dto);
+    return await this.productsRepository.save(newProduct);
+    // OLD
+    // const newProduct: ProductType = {
+    //   id: this.products.length + 1,
+    //   title,
+    //   price,
+    // };
+    // this.products.push(newProduct);
+    // return newProduct;
   }
 
   /**
@@ -33,15 +37,16 @@ export class ProductsService {
    * Get All Products
    */
   public getAll() {
-    return this.products;
+    // true async
+    return this.productsRepository.find();
   }
 
   /**
    * Get One Product By Id
    */
-  public getOneBy(id: number) {
+  public async getOneBy(id: number) {
     //(@Param() param: any) // object
-    const product = this.products.find((p) => p.id === id);
+    const product = await this.productsRepository.findOne({ where: { id } });
     if (!product) throw new NotFoundException('product not found');
     console.log(id);
     return product;
@@ -51,22 +56,20 @@ export class ProductsService {
    * Update Product
    */
 
-  public update(id: number, UpdateProductDto: UpdateProductDto) {
-    //(new ValidationPipe()
-    const product = this.products.find((p) => p.id === id);
-    if (!product) throw new NotFoundException('product not found');
-    console.log(UpdateProductDto);
-    return { message: 'product updated sucessfully with id ' + id };
+  public async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.getOneBy(id);
+    product.title = updateProductDto.title ?? product.title;
+    product.description = updateProductDto.description ?? product.description;
+    product.price = updateProductDto.price ?? product.price;
+    return this.productsRepository.save(product);
   }
 
   /**
    * Delete Product
    */
-  public delete(id: string) {
-    console.log(this.products);
-    const product = this.products.find((p) => p.id === parseInt(id));
-    if (!product) throw new NotFoundException('product not found');
-    console.log(this.products);
+  public async delete(id: number) {
+    const product = await this.getOneBy(id);
+    await this.productsRepository.remove(product);
     return { message: 'product deleted sucessfully with id ' + id };
   }
 }

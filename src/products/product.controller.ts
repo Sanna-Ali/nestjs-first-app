@@ -43,7 +43,7 @@ export class ProductsController {
   }
   // Delete: ~/api/products/:id
   @Delete('/:id')
-  public deleteProduct(@Param('id') id: string) {
+  public deleteProduct(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.delete(id);
   }
 }

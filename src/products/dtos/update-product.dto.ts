@@ -12,6 +12,9 @@ export class UpdateProductDto {
   @Length(2, 150)
   @IsOptional()
   title?: string;
+  @IsString({ message: 'description should be string' })
+  @IsOptional()
+  description?: string;
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
