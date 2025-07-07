@@ -9,6 +9,6 @@ POST http://localhost:5000/api/products
 Content-Type: application/json
 
 {
-  "title": "Honey Jar",
-  "price": 25
+ "title":"product1",
+  "price":12
 }
