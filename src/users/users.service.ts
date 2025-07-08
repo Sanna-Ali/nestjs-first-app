@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RegisterDto } from './dtos/register.dto';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -7,12 +11,14 @@ import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JWTPayloadType, AccessTokenType } from 'src/utils/types';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepositor: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
   /**
    *  Creatte new user
@@ -58,6 +64,25 @@ export class UsersService {
     });
     return { accessToken };
   }
+  /**
+   *  Get Current User (logged in user)
+   * @param id
+   * @returns
+   */
+  public async getCurrentUser(id: number) {
+    //id: number //bearerToken: string
+    // const [type, token] = bearerToken.split(' ');
+    // const payload = await this.jwtService.verifyAsync(token, {
+    //   secret: this.config.get<string>('JWT_SECRET'),
+    // });
+    const user = await this.userRepositor.findOne({
+      //: payload.id
+      where: { id },
+    });
+    if (!user) throw new NotFoundException('user not found');
+    return user;
+  }
+
   /**
    * Generate Json Web
    * @param payload
