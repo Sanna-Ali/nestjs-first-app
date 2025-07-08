@@ -12,9 +12,13 @@ import {
 import { CreateProductDto } from './dtos/create-product.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
 import { ProductsService } from './product.service';
+import { ConfigService } from '@nestjs/config';
 @Controller('api/products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly config: ConfigService,
+  ) {}
   // POST: ~/api/products
   @Post()
   public createNewProduct(
