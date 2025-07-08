@@ -1,2 +1,14 @@
 ### Get All Users
-GET http://localhost:5000/api/localhost:5000/api/users
+GET http://localhost:5000/api/users
+//
+
+
+### Register
+POST http://localhost:5000/api/users/auth/register
+Content-Type: application/json
+
+{
+  "email": "ENGsanayali@gmail.com",
+  "password": "1234ll56",
+  "username": "sana"  
+}

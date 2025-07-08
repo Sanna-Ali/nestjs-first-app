@@ -15,9 +15,9 @@ import { UserType } from '../utils/enums';
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ type: 'varchar', length: '150', nullable: true })
+  @Column({ type: 'varchar', length: '100', nullable: true })
   username: string;
-  @Column({ type: 'varchar', length: '250', unique: true })
+  @Column({ type: 'varchar', length: '200', unique: true })
   email: string;
   @Column({})
   password: string;
