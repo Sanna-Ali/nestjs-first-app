@@ -1,5 +1,3 @@
-import { CanActivate, Injectable } from '@nestjs/common';
-import { CanActivate, Injectable } from '@nestjs/common';
 import {
   IsString,
   IsNotEmpty,
@@ -21,6 +19,3 @@ export class CreateProductDto {
   @Min(0, { message: 'price should not be less zero' })
   price: number;
 }
-
-@Injectable()
-export class AuthGuard implements CanActivate {}
