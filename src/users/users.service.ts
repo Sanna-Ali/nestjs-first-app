@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dtos/login.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JWTPayloadType, AccessTokenType } from 'src/utils/types';
 import { ConfigService } from '@nestjs/config';
@@ -69,7 +70,7 @@ export class UsersService {
    * @param id
    * @returns
    */
-  public async getCurrentUser(id: number) {
+  public async getCurrentUser(id: number): Promise<User> {
     //id: number //bearerToken: string
     // const [type, token] = bearerToken.split(' ');
     // const payload = await this.jwtService.verifyAsync(token, {
@@ -82,7 +83,34 @@ export class UsersService {
     if (!user) throw new NotFoundException('user not found');
     return user;
   }
+  /**
+   *  Get All users from the database
+   * @returns
+   */
+  public getAll(): Promise<User[]> {
+    return this.userRepositor.find();
+  }
 
+  /**
+   *
+   * @param id
+   * @param updateUserDto
+   * @returns
+   */
+
+  public async update(id: number, updateUserDto: UpdateUserDto) {
+    const { password, username } = updateUserDto;
+    const user = await this.userRepositor.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.username = username ?? user.username;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+    return this.userRepositor.save(user);
+  }
   /**
    * Generate Json Web
    * @param payload

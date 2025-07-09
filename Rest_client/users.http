@@ -8,9 +8,10 @@ POST http://localhost:5000/api/users/auth/register
 Content-Type: application/json
 
 {
-  "email": "ENGsanCayali@gmail.com",
-  "password": "1234ll56",
-  "username": "sana"  
+  "email": "ENGsanayoali4@gmail.com",
+  "password": "123lvl56",
+  "username": "sana",
+  "userType": "Admin"
 }
 
 ### Login

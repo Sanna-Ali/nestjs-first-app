@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Put,
   HttpCode,
   HttpStatus,
   Post,
@@ -16,6 +17,10 @@ import { request } from 'http';
 import { CURRENT_USER_key } from 'src/utils/constants';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { JWTPayloadType } from 'src/utils/types';
+import { Roles } from './decorators/user-role.decorator';
+import { UserType } from '../utils/enums';
+import { AuthRolesGuard } from './guards/auth-roles.guard';
+import { UpdateUserDto } from './dtos/update-user.dto';
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -41,5 +46,23 @@ export class UsersController {
     // const payload = request[CURRENT_USER_key];
     return this.usersService.getCurrentUser(payload.id);
     //return 'ok';
+  }
+  // GET: ~/api/users
+  @Get()
+  @Roles(UserType.ADMIN, UserType.NORMAL_USER)
+  @UseGuards(AuthRolesGuard)
+  public getAllUsers() {
+    return this.usersService.getAll();
+  }
+
+  // PUT: ~/api/users
+  @Put()
+  @Roles(UserType.ADMIN, UserType.NORMAL_USER)
+  @UseGuards(AuthRolesGuard)
+  public updateUser(
+    @CurrentUser() payload: JWTPayloadType,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.usersService.update(payload.id, body);
   }
 }
