@@ -10,6 +10,7 @@ import {
 import { Product } from '../products/product.entity';
 import { Review } from 'src/reviews/review.entity';
 import { UserType } from '../utils/enums';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 export class User {
@@ -20,6 +21,7 @@ export class User {
   @Column({ type: 'varchar', length: '200', unique: true })
   email: string;
   @Column({})
+  @Exclude()
   password: string;
   @Column({ type: 'enum', enum: UserType, default: UserType.NORMAL_USER })
   userType: UserType;

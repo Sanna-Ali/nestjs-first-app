@@ -8,6 +8,8 @@ import {
   Post,
   Req,
   UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegisterDto } from './dtos/register.dto';
@@ -21,6 +23,7 @@ import { Roles } from './decorators/user-role.decorator';
 import { UserType } from '../utils/enums';
 import { AuthRolesGuard } from './guards/auth-roles.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { LoggerIntercepter } from 'src/utils/intercepter/logger.intercepter';
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -40,16 +43,19 @@ export class UsersController {
 
   //GET:~/api/user/current-user
   @Get('current-user')
+  @UseInterceptors(ClassSerializerInterceptor) //LoggerIntercepter
   @UseGuards(AuthGuard)
   public getCurrentUser(@CurrentUser() payload: JWTPayloadType) {
     // //@Req() request: any
     // const payload = request[CURRENT_USER_key];
+
     return this.usersService.getCurrentUser(payload.id);
     //return 'ok';
   }
   // GET: ~/api/users
   @Get()
   @Roles(UserType.ADMIN, UserType.NORMAL_USER)
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(AuthRolesGuard)
   public getAllUsers() {
     return this.usersService.getAll();

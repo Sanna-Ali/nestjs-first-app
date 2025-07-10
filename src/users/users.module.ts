@@ -6,10 +6,12 @@ import { User } from './user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
+import { AuthService } from './auth.service';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, AuthService],
+  exports: [UsersService],
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({

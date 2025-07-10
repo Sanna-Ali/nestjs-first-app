@@ -13,13 +13,16 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JWTPayloadType, AccessTokenType } from 'src/utils/types';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from './auth.service';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepositor: Repository<User>,
-    private readonly jwtService: JwtService,
-    private readonly config: ConfigService,
+    private readonly authService: AuthService,
+
+    // private readonly jwtService: JwtService,
+    // private readonly config: ConfigService,
   ) {}
   /**
    *  Creatte new user
@@ -27,24 +30,7 @@ export class UsersService {
    * @returns
    */
   public async register(registerDto: RegisterDto): Promise<AccessTokenType> {
-    const { email, password, username } = registerDto; /////////////////////////////////////////////////
-    const userFromDb = await this.userRepositor.findOne({ where: { email } });
-    if (userFromDb) throw new BadRequestException('user already exist');
-    const salt = await bcrypt.genSalt(10);
-    const hashedPasssword = await bcrypt.hash(password, salt);
-    let newUser = this.userRepositor.create({
-      email,
-      username,
-      password: hashedPasssword,
-    });
-
-    newUser = await this.userRepositor.save(newUser);
-
-    const accessToken = await this.generateJWT({
-      id: newUser.id,
-      userType: newUser.userType,
-    });
-    return { accessToken };
+    return this.authService.register(registerDto);
   }
 
   /**
@@ -53,17 +39,7 @@ export class UsersService {
    * @returns
    */
   public async login(loginDto: LoginDto): Promise<AccessTokenType> {
-    const { email, password } = loginDto; /////////////////////////////////////////////////
-    const user = await this.userRepositor.findOne({ where: { email } });
-    if (!user) throw new BadRequestException('invalid email or password');
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch)
-      throw new BadRequestException('invalid email or password');
-    const accessToken = await this.generateJWT({
-      id: user.id,
-      userType: user.userType,
-    });
-    return { accessToken };
+    return this.authService.login(loginDto);
   }
   /**
    *  Get Current User (logged in user)
@@ -110,13 +86,5 @@ export class UsersService {
       user.password = await bcrypt.hash(password, salt);
     }
     return this.userRepositor.save(user);
-  }
-  /**
-   * Generate Json Web
-   * @param payload
-   * @returns token
-   */
-  private generateJWT(payload: JWTPayloadType): Promise<string> {
-    return this.jwtService.signAsync(payload);
   }
 }

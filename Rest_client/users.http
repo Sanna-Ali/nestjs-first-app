@@ -7,18 +7,17 @@ GET http://localhost:5000/api/users
 POST http://localhost:5000/api/users/auth/register
 Content-Type: application/json
 
-{
-  "email": "ENGsanayoali4@gmail.com",
+{ 
+  "email": "ENG.sanayoali4@gmail.com",
   "password": "123lvl56",
-  "username": "sana",
-  "userType": "Admin"
+  "username": "sana"
 }
 
 ### Login
 POST http://localhost:5000/api/users/auth/login
 Content-Type: application/json
 
-{
-  "email": "ENGsanayali@gmail.com",
-  "password": "1234ll56"
+{ 
+  "email": "ENG.sanayoali4@gmail.com",
+  "password": "123lvl56"
 }

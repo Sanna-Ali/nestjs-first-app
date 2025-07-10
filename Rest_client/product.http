@@ -2,14 +2,15 @@
 GET http://localhost:5000/api/products
 
 ### Get Single Product 
-GET http://localhost:5000/api/products/1
+GET http://localhost:5000/api/products?title=title&minPrice=1555&maxPrice=555
 
 ###     Create New Product 
 POST http://localhost:5000/api/products
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlclR5cGUiOiJub3JtYWxfdXNlciIsImlhdCI6MTc1MjE0OTE2OSwiZXhwIjoxNzUyMjM1NTY5fQ.LpoIKiC-oi8g4A42A9bNHnrb5aFmhnCRNaSUISwxVA0
 
 {
- "title":"product2",
+ "title":"title",
  "description":"h2", 
   "price":12
 }
